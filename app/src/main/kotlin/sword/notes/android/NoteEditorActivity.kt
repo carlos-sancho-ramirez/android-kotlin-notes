@@ -29,15 +29,16 @@ class NoteEditorActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.note_editor_activity)
 
-        val file = File(notesDir, intent.getStringExtra(argNoteId))
-        val fileLength = file.length().toInt()
-        val content = ByteArray(fileLength)
-        val inStream = FileInputStream(file)
-        inStream.read(content, 0, fileLength)
-        inStream.close()
-
         actionBar.title = intent.getStringExtra(argNoteId)
-        textField.text = String(content)
+        if (savedInstanceState == null) {
+            val file = File(notesDir, intent.getStringExtra(argNoteId))
+            val fileLength = file.length().toInt()
+            val content = ByteArray(fileLength)
+            val inStream = FileInputStream(file)
+            inStream.read(content, 0, fileLength)
+            inStream.close()
+            textField.text = String(content)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
