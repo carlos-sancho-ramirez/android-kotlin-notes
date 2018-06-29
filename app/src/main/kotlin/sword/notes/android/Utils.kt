@@ -5,10 +5,8 @@ import java.io.File
 
 const val notesDirName = "notes"
 
-object Utils {
-    fun getNotesDir(context: Context): File {
-        val notesDir = File(context.filesDir, notesDirName)
-        notesDir.mkdir()
-        return notesDir
-    }
+fun getNotesDir(context: Context): File {
+    val notesDir = File(context.filesDir, notesDirName)
+    notesDir.mkdir()
+    return notesDir
 }

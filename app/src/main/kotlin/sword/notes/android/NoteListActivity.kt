@@ -16,7 +16,7 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener {
     }
 
     val notesDir: File by lazy {
-        Utils.getNotesDir(this)
+        getNotesDir(this)
     }
 
     private fun getNotesInfo() : List<NoteListItem> {

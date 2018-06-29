@@ -22,7 +22,7 @@ class NoteEditorActivity : Activity() {
     }
 
     val notesDir: File by lazy {
-        Utils.getNotesDir(this)
+        getNotesDir(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
