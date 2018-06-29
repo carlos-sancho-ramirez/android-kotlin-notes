@@ -9,8 +9,6 @@ import android.widget.AdapterView
 import android.widget.ListView
 import java.io.File
 
-const val notesDirName = "notes"
-
 class NoteListActivity : Activity(), AdapterView.OnItemClickListener {
 
     val listView by lazy {
@@ -18,9 +16,7 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener {
     }
 
     val notesDir: File by lazy {
-        val notesDir = File(filesDir, notesDirName)
-        notesDir.mkdir()
-        notesDir
+        Utils.getNotesDir(this)
     }
 
     private fun getNotesInfo() : List<NoteListItem> {
