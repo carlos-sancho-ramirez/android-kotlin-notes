@@ -4,12 +4,14 @@ import android.app.Activity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ListView
 import java.io.File
 
-class NoteListActivity : Activity() {
+const val notesDirName = "notes"
 
-    val notesDirName = "notes"
+class NoteListActivity : Activity(), AdapterView.OnItemClickListener {
 
     val listView by lazy {
         findViewById<ListView>(R.id.listView)
@@ -33,6 +35,7 @@ class NoteListActivity : Activity() {
 
     private fun updateList() {
         listView.adapter = NoteListAdapter(getNotesInfo())
+        listView.onItemClickListener = this
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,5 +57,10 @@ class NoteListActivity : Activity() {
         createNote(System.currentTimeMillis().toString())
         updateList()
         return true
+    }
+
+    override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        val noteId = (parent!!.adapter as NoteListAdapter).items[position].title
+        NoteEditorActivity.open(this, noteId)
     }
 }
