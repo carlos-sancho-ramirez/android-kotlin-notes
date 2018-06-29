@@ -42,7 +42,7 @@ class NoteEditorActivity : Activity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menu!!.add("Save")
+        menu!!.add(R.string.optionSave)
         return true
     }
 
@@ -52,7 +52,7 @@ class NoteEditorActivity : Activity() {
         outStream.print(textField.text.toString())
         outStream.close()
 
-        Toast.makeText(this, "Note saved", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, R.string.saveFeedback, Toast.LENGTH_SHORT).show()
         return true
     }
 

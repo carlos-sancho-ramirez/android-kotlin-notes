@@ -122,7 +122,7 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListVie
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menu!!.add("New")
+        menu!!.add(R.string.optionNew)
         return true
     }
 
@@ -158,7 +158,7 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListVie
 
     override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
         actionMode = mode
-        menu!!.add("Delete")
+        menu!!.add(R.string.optionDelete)
         return true
     }
 

@@ -1,5 +1,12 @@
 <resources>
     <string name="appName">Notes</string>
+
+    <string name="optionNew">New</string>
+    <string name="optionSave">Save</string>
+    <string name="optionDelete">Delete</string>
+
+    <string name="saveFeedback">Note saved</string>
+
     <string name="deleteConfirmationMessage">Are you sure that you want to remove the selected notes?</string>
     <string name="deleteFeedback">Notes deleted</string>
 </resources>
