@@ -1,6 +1,7 @@
 package sword.notes.android
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
@@ -11,6 +12,7 @@ import android.view.View
 import android.widget.AbsListView
 import android.widget.AdapterView
 import android.widget.ListView
+import android.widget.Toast
 import java.io.File
 import java.util.*
 
@@ -20,7 +22,7 @@ class NoteListActivityState() : Parcelable {
 
     private constructor(parcel: Parcel) : this() {
         intrisicState = parcel.readInt()
-        if (intrisicState == intrinsicStateSelection) {
+        if (intrisicState == intrinsicStateSelection || intrisicState == intrinsicStateDeleteConfirmation) {
             val intWords = parcel.readInt()
             for (i in 0 until intWords) {
                 val word = parcel.readInt()
@@ -35,7 +37,7 @@ class NoteListActivityState() : Parcelable {
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeInt(intrisicState)
-        if (intrisicState == intrinsicStateSelection) {
+        if (intrisicState == intrinsicStateSelection|| intrisicState == intrinsicStateDeleteConfirmation) {
             val length = selectedItems.length()
             val intWords = (length + 31) / 32
             dest.writeInt(intWords)
@@ -57,6 +59,7 @@ class NoteListActivityState() : Parcelable {
     companion object {
         const val intrinsicStateNormal = 0
         const val intrinsicStateSelection = 1
+        const val intrinsicStateDeleteConfirmation = 2
 
         @JvmField val CREATOR = object : Parcelable.Creator<NoteListActivityState> {
             override fun createFromParcel(parcel: Parcel) = NoteListActivityState(parcel)
@@ -78,6 +81,7 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListVie
     }
 
     var state = NoteListActivityState()
+    var actionMode: ActionMode? = null
 
     private fun getNotesInfo() : List<NoteListItem> {
         return notesDir.list().map({ name -> NoteListItem(name) })
@@ -111,6 +115,10 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListVie
             listView.setSelection(nextBit)
             nextBit = state.selectedItems.nextSetBit(nextBit + 1)
         }
+
+        if (state.intrisicState == NoteListActivityState.intrinsicStateDeleteConfirmation) {
+            showDeleteConfirmationDialog()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -130,7 +138,8 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListVie
     }
 
     override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
-        mode!!.finish()
+        state.intrisicState = NoteListActivityState.intrinsicStateDeleteConfirmation
+        showDeleteConfirmationDialog()
         return true
     }
 
@@ -148,6 +157,7 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListVie
     }
 
     override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+        actionMode = mode
         menu!!.add("Delete")
         return true
     }
@@ -155,6 +165,7 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListVie
     override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?) = false
 
     override fun onDestroyActionMode(mode: ActionMode?) {
+        actionMode = null
         state.selectedItems.clear()
         state.intrisicState = NoteListActivityState.intrinsicStateNormal
     }
@@ -162,5 +173,29 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListVie
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
         outState!!.putParcelable(stateKey, state)
+    }
+
+    private fun showDeleteConfirmationDialog() {
+        AlertDialog.Builder(this)
+                .setMessage(R.string.deleteConfirmationMessage)
+                .setPositiveButton(android.R.string.yes, { _, _ -> deleteNotes() })
+                .setOnCancelListener({ state.intrisicState = NoteListActivityState.intrinsicStateNormal })
+                .create().show()
+    }
+
+    private fun deleteNotes() {
+        val items = (listView.adapter as NoteListAdapter).items
+        var position = state.selectedItems.nextSetBit(0)
+        while (position >= 0) {
+            if (!File(notesDir, items[position].title).delete()) {
+                throw AssertionError()
+            }
+            position = state.selectedItems.nextSetBit(position + 1)
+        }
+
+        Toast.makeText(this, R.string.deleteFeedback, Toast.LENGTH_SHORT).show()
+        actionMode?.finish()
+        actionMode = null
+        updateList()
     }
 }

@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">Notes</string>
+    <string name="appName">Notes</string>
+    <string name="deleteConfirmationMessage">Are you sure that you want to remove the selected notes?</string>
+    <string name="deleteFeedback">Notes deleted</string>
 </resources>
