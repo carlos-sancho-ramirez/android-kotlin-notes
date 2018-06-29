@@ -12,10 +12,11 @@ class NoteEditorActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.note_editor_activity)
+
+        actionBar.title = intent.getStringExtra(argNoteId)
     }
 
     companion object {
-
         fun open(context: Context, noteId: String): Unit {
             val intent = Intent(context, NoteEditorActivity::class.java)
             intent.putExtra(argNoteId, noteId)
