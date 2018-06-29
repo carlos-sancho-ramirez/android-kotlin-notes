@@ -5,20 +5,18 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
-import android.view.ActionMode
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.widget.AbsListView
-import android.widget.AdapterView
-import android.widget.ListView
-import android.widget.Toast
+import android.text.Editable
+import android.text.TextUtils
+import android.text.TextWatcher
+import android.view.*
+import android.widget.*
 import java.io.File
 import java.util.*
 
 class NoteListActivityState() : Parcelable {
     var intrisicState: Int = intrinsicStateNormal
     val selectedItems = BitSet()
+    var noteTitle: String? = null
 
     private constructor(parcel: Parcel) : this() {
         intrisicState = parcel.readInt()
@@ -70,7 +68,7 @@ class NoteListActivityState() : Parcelable {
 
 private const val stateKey = "state"
 
-class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListView.MultiChoiceModeListener {
+class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListView.MultiChoiceModeListener, TextWatcher {
 
     val listView by lazy {
         findViewById<ListView>(R.id.listView)
@@ -87,9 +85,12 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListVie
         return notesDir.list().map({ name -> NoteListItem(name) })
     }
 
-    private fun createNote(name: String) {
-        if (!File(notesDir, name).createNewFile()) {
-            throw AssertionError()
+    private fun createNote(name: String?) {
+        if (TextUtils.isEmpty(name) || !File(notesDir, name).createNewFile()) {
+            Toast.makeText(this, R.string.unableToCreate, Toast.LENGTH_SHORT).show()
+        }
+        else {
+            updateList()
         }
     }
 
@@ -127,8 +128,7 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListVie
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        createNote(System.currentTimeMillis().toString())
-        updateList()
+        showCreateDialog()
         return true
     }
 
@@ -175,6 +175,23 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListVie
         outState!!.putParcelable(stateKey, state)
     }
 
+    private fun showCreateDialog() {
+        val dialog = AlertDialog.Builder(this)
+                .setTitle(R.string.createDialogTitle)
+                .setPositiveButton(android.R.string.yes, { _, _ -> createNote(state.noteTitle) })
+                .setOnCancelListener({
+                    state.intrisicState = NoteListActivityState.intrinsicStateNormal
+                    state.noteTitle = null
+                })
+                .create()
+
+        val view = LayoutInflater.from(dialog.context).inflate(R.layout.create_dialog, null, false)
+        val textField = view.findViewById<EditText>(R.id.textField)
+        textField.addTextChangedListener(this)
+        dialog.setView(view)
+        dialog.show()
+    }
+
     private fun showDeleteConfirmationDialog() {
         AlertDialog.Builder(this)
                 .setMessage(R.string.deleteConfirmationMessage)
@@ -197,5 +214,17 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListVie
         actionMode?.finish()
         actionMode = null
         updateList()
+    }
+
+    override fun afterTextChanged(s: Editable?) {
+        state.noteTitle = s.toString()
+    }
+
+    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        // Nothing to be done
+    }
+
+    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+        // Nothing to be done
     }
 }

@@ -5,6 +5,8 @@
     <string name="optionSave">Save</string>
     <string name="optionDelete">Delete</string>
 
+    <string name="createDialogTitle">New note title</string>
+    <string name="unableToCreate">Unable to create</string>
     <string name="saveFeedback">Note saved</string>
 
     <string name="deleteConfirmationMessage">Are you sure that you want to remove the selected notes?</string>
