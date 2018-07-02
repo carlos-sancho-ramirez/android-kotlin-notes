@@ -2,7 +2,6 @@ package sword.notes.android
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -103,10 +102,10 @@ class NoteEditorActivity : Activity() {
     }
 
     companion object {
-        fun open(context: Context, noteId: String): Unit {
-            val intent = Intent(context, NoteEditorActivity::class.java)
+        fun open(activity: Activity, requestCode: Int, noteId: String): Unit {
+            val intent = Intent(activity, NoteEditorActivity::class.java)
             intent.putExtra(argNoteId, noteId)
-            context.startActivity(intent)
+            activity.startActivityForResult(intent, requestCode)
         }
     }
 }

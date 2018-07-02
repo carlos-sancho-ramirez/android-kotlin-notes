@@ -2,6 +2,7 @@ package sword.notes.android
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
@@ -68,6 +69,7 @@ class NoteListActivityState() : Parcelable {
 }
 
 private const val stateKey = "state"
+private const val requestCodeEditor = 1
 
 class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListView.MultiChoiceModeListener, TextWatcher {
 
@@ -81,6 +83,7 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListVie
 
     var state = NoteListActivityState()
     var actionMode: ActionMode? = null
+    var justUpdated: Boolean = false
 
     private fun getDateInfo(noteId: String): String {
         val millis = File(notesDir, noteId).lastModified()
@@ -124,6 +127,7 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListVie
         listView.choiceMode = ListView.CHOICE_MODE_MULTIPLE_MODAL
         listView.setMultiChoiceModeListener(this)
         updateList()
+        justUpdated = true
 
         var nextBit = state.selectedItems.nextSetBit(0)
         while (nextBit >= 0) {
@@ -141,6 +145,17 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListVie
         return true
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == requestCodeEditor && !justUpdated) {
+            updateList()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        justUpdated = false
+    }
+
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         showCreateDialog()
         return true
@@ -148,7 +163,7 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListVie
 
     override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         val noteId = (parent!!.adapter as NoteListAdapter).items[position].title
-        NoteEditorActivity.open(this, noteId)
+        NoteEditorActivity.open(this, requestCodeEditor, noteId)
     }
 
     override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
