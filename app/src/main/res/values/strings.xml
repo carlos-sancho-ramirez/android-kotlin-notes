@@ -1,9 +1,12 @@
 <resources>
     <string name="appName">Notes</string>
+    <string name="appVersion">App version is %s</string>
+    <string name="appDeveloper">App developed by Carlos Sancho Ramírez</string>
 
     <string name="optionNew">New</string>
     <string name="optionSave">Save</string>
     <string name="optionDelete">Delete</string>
+    <string name="optionAbout">About</string>
 
     <string name="createDialogTitle">New note title</string>
     <string name="unableToCreate">Unable to create</string>

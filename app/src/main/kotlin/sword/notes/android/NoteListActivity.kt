@@ -141,7 +141,7 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListVie
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menu!!.add(R.string.optionNew)
+        menuInflater.inflate(R.menu.note_list_activity, menu)
         return true
     }
 
@@ -157,8 +157,17 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListVie
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        showCreateDialog()
-        return true
+        return when (item!!.itemId) {
+            R.id.optionNew -> {
+                showCreateDialog()
+                true
+            }
+            R.id.optionAbout -> {
+                AboutActivity.open(this)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
