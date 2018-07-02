@@ -20,6 +20,7 @@ private const val showingLeaveDialogKey = "sld"
 class NoteEditorActivity : Activity() {
 
     private var showingLeaveDialog: Boolean = false
+    var originalText = ""
 
     val textField by lazy {
         findViewById<TextView>(R.id.textField)
@@ -29,19 +30,31 @@ class NoteEditorActivity : Activity() {
         getNotesDir(this)
     }
 
+    private fun readNote(): String {
+        val file = File(notesDir, intent.getStringExtra(argNoteId))
+        val fileLength = file.length().toInt()
+        val content = ByteArray(fileLength)
+        val inStream = FileInputStream(file)
+        inStream.read(content, 0, fileLength)
+        inStream.close()
+        return String(content)
+    }
+
+    private fun saveNote(): Unit {
+        val file = File(notesDir, intent.getStringExtra(argNoteId))
+        val outStream = PrintWriter(FileOutputStream(file, false))
+        outStream.print(textField.text.toString())
+        outStream.close()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.note_editor_activity)
 
         actionBar.title = intent.getStringExtra(argNoteId)
+        originalText = readNote()
         if (savedInstanceState == null) {
-            val file = File(notesDir, intent.getStringExtra(argNoteId))
-            val fileLength = file.length().toInt()
-            val content = ByteArray(fileLength)
-            val inStream = FileInputStream(file)
-            inStream.read(content, 0, fileLength)
-            inStream.close()
-            textField.text = String(content)
+            textField.text = originalText
         }
         else if (savedInstanceState.getBoolean(showingLeaveDialogKey)) {
             showingLeaveDialog = true
@@ -55,11 +68,7 @@ class NoteEditorActivity : Activity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        val file = File(notesDir, intent.getStringExtra(argNoteId))
-        val outStream = PrintWriter(FileOutputStream(file, false))
-        outStream.print(textField.text.toString())
-        outStream.close()
-
+        saveNote()
         Toast.makeText(this, R.string.saveFeedback, Toast.LENGTH_SHORT).show()
         return true
     }
@@ -69,8 +78,10 @@ class NoteEditorActivity : Activity() {
         outState!!.putBoolean(showingLeaveDialogKey, showingLeaveDialog)
     }
 
+    private fun hasChanged() = originalText != textField.text.toString()
+
     override fun onBackPressed(): Unit {
-        if (!showingLeaveDialog) {
+        if (!showingLeaveDialog && hasChanged()) {
             showingLeaveDialog = true
             showLeaveDialog()
         }
