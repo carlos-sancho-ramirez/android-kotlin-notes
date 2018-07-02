@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="appName">Notes</string>
+    <string name="appVersion">La version de la app es %s</string>
+    <string name="appDeveloper">App desarrollada por Carlos Sancho Ramírez</string>
+
+    <string name="optionNew">Nueva</string>
+    <string name="optionSave">Guardar</string>
+    <string name="optionDelete">Eliminar</string>
+    <string name="optionAbout">Acerca</string>
+
+    <string name="createDialogTitle">Introduzca el título</string>
+    <string name="unableToCreate">No se ha podido crear</string>
+    <string name="saveFeedback">Nota guardada</string>
+
+    <string name="leaveConfirmationMessage">La nota no ha sido guardada. ¿Está seguro que desea volver atrás y descartar los cambios?</string>
+
+    <string name="deleteConfirmationMessage">¿Está seguro que desea descartar las notas seleccionadas?</string>
+    <string name="deleteFeedback">Notas eliminadas</string>
+</resources>
