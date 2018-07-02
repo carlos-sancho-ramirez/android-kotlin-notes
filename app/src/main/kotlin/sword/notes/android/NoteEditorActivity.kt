@@ -1,6 +1,7 @@
 package sword.notes.android
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -14,8 +15,11 @@ import java.io.FileOutputStream
 import java.io.PrintWriter
 
 private const val argNoteId = "nId"
+private const val showingLeaveDialogKey = "sld"
 
 class NoteEditorActivity : Activity() {
+
+    private var showingLeaveDialog: Boolean = false
 
     val textField by lazy {
         findViewById<TextView>(R.id.textField)
@@ -39,6 +43,10 @@ class NoteEditorActivity : Activity() {
             inStream.close()
             textField.text = String(content)
         }
+        else if (savedInstanceState.getBoolean(showingLeaveDialogKey)) {
+            showingLeaveDialog = true
+            showLeaveDialog()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -54,6 +62,30 @@ class NoteEditorActivity : Activity() {
 
         Toast.makeText(this, R.string.saveFeedback, Toast.LENGTH_SHORT).show()
         return true
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        outState!!.putBoolean(showingLeaveDialogKey, showingLeaveDialog)
+    }
+
+    override fun onBackPressed(): Unit {
+        if (!showingLeaveDialog) {
+            showingLeaveDialog = true
+            showLeaveDialog()
+        }
+        else {
+            super.onBackPressed()
+        }
+    }
+
+    private fun showLeaveDialog(): Unit {
+        AlertDialog.Builder(this)
+                .setMessage(R.string.leaveConfirmationMessage)
+                .setPositiveButton(android.R.string.yes) { _, _ -> finish() }
+                .setNegativeButton(android.R.string.no) { _, _ -> showingLeaveDialog = false }
+                .setOnCancelListener { _ -> showingLeaveDialog = false}
+                .create().show()
     }
 
     companion object {
