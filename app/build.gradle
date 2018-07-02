@@ -5,6 +5,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 String readCommitHash() {
+    def givenVersionName = '1.0.0'
     def suffix = ''
 
     def gitExists = exec {
@@ -14,19 +15,31 @@ String readCommitHash() {
 
     if (gitExists.getExitValue() == 0) {
         def so = new ByteArrayOutputStream()
-        def gitRevParseResult = exec {
+        def gitTagResult = exec {
             executable 'git'
-            args 'rev-parse', '--short', 'HEAD'
+            args 'describe', '--tags', 'HEAD'
             ignoreExitValue true
             standardOutput = so
         }
+        if (gitTagResult.exitValue == 0) {
+            givenVersionName = so.toString().trim()
+        }
+        else {
+            def so2 = new ByteArrayOutputStream()
+            def gitRevParseResult = exec {
+                executable 'git'
+                args 'rev-parse', '--short', 'HEAD'
+                ignoreExitValue true
+                standardOutput = so2
+            }
 
-        if (gitRevParseResult.exitValue == 0) {
-            suffix = '.' + so.toString().trim()
+            if (gitRevParseResult.exitValue == 0) {
+                suffix = '.' + so2.toString().trim()
+            }
         }
     }
 
-    return suffix
+    return givenVersionName + suffix
 }
 
 android {
@@ -36,7 +49,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 26
         versionCode 1
-        versionName "1.0.0" + readCommitHash()
+        versionName readCommitHash()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
