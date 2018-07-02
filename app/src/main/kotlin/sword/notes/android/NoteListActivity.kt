@@ -8,6 +8,7 @@ import android.os.Parcelable
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.text.format.DateFormat
 import android.view.*
 import android.widget.*
 import java.io.File
@@ -81,8 +82,21 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListVie
     var state = NoteListActivityState()
     var actionMode: ActionMode? = null
 
+    private fun getDateInfo(noteId: String): String {
+        val millis = File(notesDir, noteId).lastModified()
+        if (millis > 0) {
+            val dateFormat = DateFormat.getDateFormat(this)
+            val timeFormat = DateFormat.getTimeFormat(this)
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = millis
+            return dateFormat.format(calendar.time) + ' ' + timeFormat.format(calendar.time)
+        }
+
+        return ""
+    }
+
     private fun getNotesInfo() : List<NoteListItem> {
-        return notesDir.list().map({ name -> NoteListItem(name) })
+        return notesDir.list().map { name -> NoteListItem(name, getDateInfo(name)) }
     }
 
     private fun createNote(name: String?) {

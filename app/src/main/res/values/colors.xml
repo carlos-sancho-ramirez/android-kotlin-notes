@@ -6,4 +6,5 @@
 
     <color name="listEntryPressed">#66000000</color>
     <color name="listEntrySelected">#33000000</color>
+    <color name="listEntryTime">#999999</color>
 </resources>

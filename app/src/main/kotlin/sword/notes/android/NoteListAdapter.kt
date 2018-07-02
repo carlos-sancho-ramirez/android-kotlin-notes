@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 
-class NoteListItem(val title: String)
+data class NoteListItem(val title: String, val date: String)
 
 class NoteListAdapter(val items: List<NoteListItem>) : BaseAdapter() {
 
@@ -26,6 +26,9 @@ class NoteListAdapter(val items: List<NoteListItem>) : BaseAdapter() {
 
         val titleView: TextView = view.findViewById(R.id.title)
         titleView.text = items[position].title
+
+        val dateView: TextView = view.findViewById(R.id.date)
+        dateView.text = items[position].date
 
         return view
     }
