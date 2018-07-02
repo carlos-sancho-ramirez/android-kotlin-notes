@@ -41,10 +41,13 @@ class NoteEditorActivity : Activity() {
     }
 
     private fun saveNote(): Unit {
+        val text = textField.text.toString()
         val file = File(notesDir, intent.getStringExtra(argNoteId))
         val outStream = PrintWriter(FileOutputStream(file, false))
-        outStream.print(textField.text.toString())
+        outStream.print(text)
         outStream.close()
+
+        originalText = text
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
