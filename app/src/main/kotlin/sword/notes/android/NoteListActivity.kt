@@ -71,11 +71,11 @@ private const val stateKey = "state"
 
 class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListView.MultiChoiceModeListener, TextWatcher {
 
-    val listView by lazy {
+    private val listView by lazy {
         findViewById<ListView>(R.id.listView)
     }
 
-    val notesDir: File by lazy {
+    private val notesDir: File by lazy {
         getNotesDir(this)
     }
 
@@ -192,11 +192,11 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListVie
     private fun showCreateDialog() {
         val dialog = AlertDialog.Builder(this)
                 .setTitle(R.string.createDialogTitle)
-                .setPositiveButton(android.R.string.yes, { _, _ -> createNote(state.noteTitle) })
-                .setOnCancelListener({
+                .setPositiveButton(android.R.string.yes) { _, _ -> createNote(state.noteTitle) }
+                .setOnCancelListener {
                     state.intrisicState = NoteListActivityState.intrinsicStateNormal
                     state.noteTitle = null
-                })
+                }
                 .create()
 
         val view = LayoutInflater.from(dialog.context).inflate(R.layout.create_dialog, null, false)
@@ -209,8 +209,8 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListVie
     private fun showDeleteConfirmationDialog() {
         AlertDialog.Builder(this)
                 .setMessage(R.string.deleteConfirmationMessage)
-                .setPositiveButton(android.R.string.yes, { _, _ -> deleteNotes() })
-                .setOnCancelListener({ state.intrisicState = NoteListActivityState.intrinsicStateNormal })
+                .setPositiveButton(android.R.string.yes) { _, _ -> deleteNotes() }
+                .setOnCancelListener { state.intrisicState = NoteListActivityState.intrinsicStateNormal }
                 .create().show()
     }
 
