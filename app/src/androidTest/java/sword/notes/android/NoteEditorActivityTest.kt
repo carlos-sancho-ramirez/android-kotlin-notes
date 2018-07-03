@@ -9,12 +9,14 @@ import android.support.test.espresso.action.ViewActions
 import android.support.test.espresso.action.ViewActions.*
 import android.support.test.espresso.assertion.ViewAssertions.doesNotExist
 import android.support.test.espresso.assertion.ViewAssertions.matches
+import android.support.test.espresso.matcher.RootMatchers.withDecorView
 import android.support.test.espresso.matcher.ViewMatchers
 import android.support.test.espresso.matcher.ViewMatchers.*
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import org.hamcrest.Description
 import org.hamcrest.Matchers.allOf
+import org.hamcrest.Matchers.not
 import org.hamcrest.TypeSafeMatcher
 import org.junit.Rule
 import org.junit.Test
@@ -47,6 +49,10 @@ class NoteEditorActivityTest {
         }
     }
 
+    private fun assertToastPresent(textResId: Int) {
+        onView(withText(textResId)).inRoot(withDecorView(not(activityTestRule.activity.window.decorView))).check(matches(isDisplayed()))
+    }
+
     @Test
     fun createNote() {
         val activity = activityTestRule.activity
@@ -62,6 +68,7 @@ class NoteEditorActivityTest {
         onData(withTitle(noteTitle)).perform(click())
         onView(withId(R.id.textField)).check(matches(isDisplayed())).perform(replaceText(noteContent))
         activity.clickMenuItem(activity.getString(R.string.optionSave))
+        assertToastPresent(R.string.saveFeedback)
         Espresso.pressBack()
 
         onData(withTitle(noteTitle)).perform(click())
@@ -72,6 +79,7 @@ class NoteEditorActivityTest {
         activity.clickMenuItem(activity.getString(R.string.optionDelete))
         onView(withText(activity.getString(R.string.deleteConfirmationMessage))).check(matches(isDisplayed()))
         onView(withId(android.R.id.button1)).perform(click())
+        assertToastPresent(R.string.deleteFeedback)
 
         onView(allOf(withId(R.id.title), withText(noteTitle))).check(doesNotExist())
     }
