@@ -1,16 +1,13 @@
 package sword.notes.android
 
-import android.content.Context
 import android.support.test.espresso.Espresso
 import android.support.test.espresso.Espresso.onData
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.NoMatchingViewException
-import android.support.test.espresso.action.ViewActions
 import android.support.test.espresso.action.ViewActions.*
 import android.support.test.espresso.assertion.ViewAssertions.doesNotExist
 import android.support.test.espresso.assertion.ViewAssertions.matches
 import android.support.test.espresso.matcher.RootMatchers.withDecorView
-import android.support.test.espresso.matcher.ViewMatchers
 import android.support.test.espresso.matcher.ViewMatchers.*
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
@@ -29,13 +26,13 @@ class NoteEditorActivityTest {
     @JvmField
     var activityTestRule = ActivityTestRule<NoteListActivity>(NoteListActivity::class.java)
 
-    private fun Context.clickMenuItem(text: String) {
+    private fun clickMenuItem(itemId: Int, stringId: Int) {
         try {
-            onView(ViewMatchers.withText(text)).perform(ViewActions.click())
+            onView(withId(itemId)).perform(click())
         }
         catch (e: NoMatchingViewException) {
-            Espresso.openActionBarOverflowOrOptionsMenu(this)
-            onView(ViewMatchers.withText(text)).perform(ViewActions.click())
+            Espresso.openActionBarOverflowOrOptionsMenu(activityTestRule.activity)
+            onView(withText(stringId)).perform(click())
         }
     }
 
@@ -56,7 +53,7 @@ class NoteEditorActivityTest {
     @Test
     fun createNote() {
         val activity = activityTestRule.activity
-        activity.clickMenuItem(activity.getString(R.string.optionNew))
+        clickMenuItem(R.id.optionNew, R.string.optionNew)
 
         val noteTitle = "My test note"
         val noteContent = "This is my note content"
@@ -67,7 +64,7 @@ class NoteEditorActivityTest {
 
         onData(withTitle(noteTitle)).perform(click())
         onView(withId(R.id.textField)).check(matches(isDisplayed())).perform(replaceText(noteContent))
-        activity.clickMenuItem(activity.getString(R.string.optionSave))
+        clickMenuItem(R.id.optionSave, R.string.optionSave)
         assertToastPresent(R.string.saveFeedback)
         Espresso.pressBack()
 
@@ -76,7 +73,7 @@ class NoteEditorActivityTest {
         Espresso.pressBack()
 
         onData(withTitle(noteTitle)).perform(longClick())
-        activity.clickMenuItem(activity.getString(R.string.optionDelete))
+        clickMenuItem(R.id.optionDelete, R.string.optionDelete)
         onView(withText(activity.getString(R.string.deleteConfirmationMessage))).check(matches(isDisplayed()))
         onView(withId(android.R.id.button1)).perform(click())
         assertToastPresent(R.string.deleteFeedback)

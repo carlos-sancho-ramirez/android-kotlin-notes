@@ -65,7 +65,7 @@ class NoteEditorActivity : Activity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menu!!.add(R.string.optionSave)
+        menuInflater.inflate(R.menu.note_editor_activity, menu)
         return true
     }
 

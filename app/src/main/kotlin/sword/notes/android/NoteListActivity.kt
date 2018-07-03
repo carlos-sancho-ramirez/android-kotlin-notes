@@ -196,7 +196,7 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListVie
 
     override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
         actionMode = mode
-        menu!!.add(R.string.optionDelete)
+        menuInflater.inflate(R.menu.list_action_mode, menu)
         return true
     }
 
