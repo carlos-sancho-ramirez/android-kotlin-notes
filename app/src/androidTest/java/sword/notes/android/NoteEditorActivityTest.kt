@@ -2,8 +2,8 @@ package sword.notes.android
 
 import android.content.Context
 import android.support.test.espresso.Espresso
+import android.support.test.espresso.Espresso.onData
 import android.support.test.espresso.Espresso.onView
-import android.support.test.espresso.Espresso.pressBack
 import android.support.test.espresso.NoMatchingViewException
 import android.support.test.espresso.action.ViewActions
 import android.support.test.espresso.action.ViewActions.*
@@ -13,7 +13,9 @@ import android.support.test.espresso.matcher.ViewMatchers
 import android.support.test.espresso.matcher.ViewMatchers.*
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
+import org.hamcrest.Description
 import org.hamcrest.Matchers.allOf
+import org.hamcrest.TypeSafeMatcher
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -35,6 +37,16 @@ class NoteEditorActivityTest {
         }
     }
 
+    private fun withTitle(title: String): TypeSafeMatcher<NoteListItem> {
+        return object : TypeSafeMatcher<NoteListItem>(NoteListItem::class.java) {
+            override fun describeTo(description: Description?) {
+                // Not implemented
+            }
+
+            override fun matchesSafely(item: NoteListItem): Boolean = item.title == title
+        }
+    }
+
     @Test
     fun createNote() {
         val activity = activityTestRule.activity
@@ -47,16 +59,16 @@ class NoteEditorActivityTest {
         onView(withId(R.id.textField)).perform(replaceText(noteTitle))
         onView(withText(activity.getString(android.R.string.yes))).check(matches(isDisplayed())).perform(click())
 
-        onView(allOf(withId(R.id.title), withText(noteTitle))).check(matches(isDisplayed())).perform(click())
+        onData(withTitle(noteTitle)).perform(click())
         onView(withId(R.id.textField)).check(matches(isDisplayed())).perform(replaceText(noteContent))
         activity.clickMenuItem(activity.getString(R.string.optionSave))
-        pressBack()
+        Espresso.pressBack()
 
-        onView(allOf(withId(R.id.title), withText(noteTitle))).check(matches(isDisplayed())).perform(click())
+        onData(withTitle(noteTitle)).perform(click())
         onView(withId(R.id.textField)).check(matches(allOf(isDisplayed(), withText(noteContent))))
-        pressBack()
+        Espresso.pressBack()
 
-        onView(allOf(withId(R.id.title), withText(noteTitle))).check(matches(isDisplayed())).perform(longClick())
+        onData(withTitle(noteTitle)).perform(longClick())
         activity.clickMenuItem(activity.getString(R.string.optionDelete))
         onView(withText(activity.getString(R.string.deleteConfirmationMessage))).check(matches(isDisplayed()))
         onView(withId(android.R.id.button1)).perform(click())
