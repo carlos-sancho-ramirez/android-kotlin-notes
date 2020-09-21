@@ -121,7 +121,7 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListVie
         setContentView(R.layout.note_list_activity)
 
         if (savedInstanceState != null) {
-            state = savedInstanceState.getParcelable(stateKey)
+            state = savedInstanceState.getParcelable(stateKey)!!
         }
 
         listView.choiceMode = ListView.CHOICE_MODE_MULTIPLE_MODAL
@@ -156,8 +156,8 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListVie
         justUpdated = false
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item!!.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
             R.id.optionNew -> {
                 showCreateDialog()
                 true
@@ -208,9 +208,9 @@ class NoteListActivity : Activity(), AdapterView.OnItemClickListener, AbsListVie
         state.intrisicState = NoteListActivityState.intrinsicStateNormal
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
+    override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState!!.putParcelable(stateKey, state)
+        outState.putParcelable(stateKey, state)
     }
 
     private fun showCreateDialog() {

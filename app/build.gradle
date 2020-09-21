@@ -43,11 +43,12 @@ String readCommitHash() {
 }
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 30
+    buildToolsVersion '30.0.2'
     defaultConfig {
         applicationId "sword.notes.android"
         minSdkVersion 14
-        targetSdkVersion 26
+        targetSdkVersion 30
         versionCode 1
         versionName readCommitHash()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

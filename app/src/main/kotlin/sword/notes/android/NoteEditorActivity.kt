@@ -53,7 +53,7 @@ class NoteEditorActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.note_editor_activity)
 
-        actionBar.title = intent.getStringExtra(argNoteId)
+        actionBar!!.title = intent.getStringExtra(argNoteId)
         originalText = readNote()
         if (savedInstanceState == null) {
             textField.text = originalText
@@ -69,15 +69,15 @@ class NoteEditorActivity : Activity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         saveNote()
         Toast.makeText(this, R.string.saveFeedback, Toast.LENGTH_SHORT).show()
         return true
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
+    override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState!!.putBoolean(showingLeaveDialogKey, showingLeaveDialog)
+        outState.putBoolean(showingLeaveDialogKey, showingLeaveDialog)
     }
 
     private fun hasChanged() = originalText != textField.text.toString()
